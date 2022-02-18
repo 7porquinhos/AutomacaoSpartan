@@ -1,4 +1,5 @@
 ﻿using Spartan.BLL.Util;
+using Spartan.BLL.Util.Arquivos;
 using Spartan.BLL.Util.Extensao;
 using Spartan.Dominio.Entidades.SpartanConfig;
 using Spartan.Dominio.Validacoes;
@@ -14,10 +15,8 @@ namespace Spartan
 {
     class Program
     {
-
         static void Main(string[] args)
-           {
-
+        {
             List<string> ListaDeProcessosForKill = new List<string>();
             ListaDeProcessosForKill.Add("chromedriver");
             ListaDeProcessosForKill.Add("EXCEL");
@@ -36,10 +35,13 @@ namespace Spartan
             {
                 foreach (var item in lstFinal)
                 {
-                    utilFile.Remover(item);                
+                    utilFile.Remover(item);
                 }
                 utilFile.EscreverExcel(retornoLista.Count, lstFinal);
             }
+
+            RegistraLog.Log(String.Format($"{"Log criado em "} : {DateTime.Now}"), "ArquivoLog");
+            RegistraLog.Log($"Execução Realizada!");
 
             /*
             string arquivo = ConfigurationManager.AppSettings["PathArquivo"];

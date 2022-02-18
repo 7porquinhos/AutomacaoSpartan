@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Spartan.BLL.Util.Arquivos;
 using Spartan.Dominio.Entidades.SpartanConfig;
 using Spartan.Dominio.Validacoes;
 using System;
@@ -33,8 +34,9 @@ namespace Spartan.BLL.Util
             }
             catch (Exception ex)
             {
+                RegistraLog.Log(String.Format($"{"Log criado em "} : {DateTime.Now}"), "ArquivoLog");
+                RegistraLog.Log($"Erro: {ex.Message}");
             }
-
         }
         private void Mover(ConfigEntity configEntity)
         {
@@ -52,10 +54,9 @@ namespace Spartan.BLL.Util
             }
             catch (Exception ex)
             {
-
+                RegistraLog.Log(String.Format($"{"Log criado em "} : {DateTime.Now}"), "ArquivoLog");
+                RegistraLog.Log($"Erro: {ex.Message}");
             }
-
-
         }
 
         public List<ConfigEntity> LerExcel()
@@ -65,56 +66,50 @@ namespace Spartan.BLL.Util
 
             List<ConfigEntity> lstConfigEntity = new List<ConfigEntity>();
             XLWorkbook xls = new XLWorkbook();
-
-            xls = new XLWorkbook(ConfigurationManager.AppSettings["PathArquivo"]);
-
-            //var xls = new XLWorkbook(ConfigurationManager.AppSettings["PathArquivo"]);
-            var planilha = xls.Worksheets.First(w => w.Name == ConfigurationManager.AppSettings["Aba"]);
-            var totalLinhas = planilha.Rows().Count();
             try
             {
+                xls = new XLWorkbook(ConfigurationManager.AppSettings["PathArquivo"]);
+
+                //var xls = new XLWorkbook(ConfigurationManager.AppSettings["PathArquivo"]);
+                var planilha = xls.Worksheets.First(w => w.Name == ConfigurationManager.AppSettings["Aba"]);
+                var totalLinhas = planilha.Rows().Count();
 
                 // primeira linha é o cabecalho
                 for (int l = 2; l <= totalLinhas; l++)
                 {
-                    try
+                    lstConfigEntity.Add(new ConfigEntity
                     {
-                        lstConfigEntity.Add(new ConfigEntity
-                        {
-                            id_Configuracao = int.TryParse(
-                                planilha.Cell(l, 1).Value.ToString(), out numberOff) ? int.Parse(planilha.Cell(l, 1).Value.ToString()) : numberOff,
-                            rpa_ativo = int.TryParse(
-                                planilha.Cell(l, 2).Value.ToString(), out numberOff) ? int.Parse(planilha.Cell(l, 2).Value.ToString()) : numberOff,
-                            login_rede = planilha.Cell(l, 3).Value.ToString(),
-                            dta_configuracao = DateTime.TryParse(planilha.Cell(l, 4).Value.ToString(), out dataOff) ? DateTime.Parse(planilha.Cell(l, 4).Value.ToString()) : dataOff,
-                            acs_endereco = planilha.Cell(l, 5).Value.ToString(),
-                            acs_usuario = planilha.Cell(l, 6).Value.ToString(),
-                            acs_senha = planilha.Cell(l, 7).Value.ToString(),
-                            acs_nome_arquivo = planilha.Cell(l, 8).Value.ToString(),
-                            obj_entrar = planilha.Cell(l, 9).Value.ToString(),
-                            obj_usuario = planilha.Cell(l, 10).Value.ToString(),
-                            obj_senha = planilha.Cell(l, 11).Value.ToString(),
-                            obj_pasta = planilha.Cell(l, 12).Value.ToString(),
-                            obj_nome_arquivo = planilha.Cell(l, 13).Value.ToString(),
-                            mli_sgn_carregar = planilha.Cell(l, 14).Value.ToString(),
-                            mli_sgn_entrar = planilha.Cell(l, 15).Value.ToString(),
-                            mli_sgn_pasta = planilha.Cell(l, 16).Value.ToString(),
-                            mli_sgn_download = planilha.Cell(l, 17).Value.ToString(),
-                            mli_sgn_periodicidade = planilha.Cell(l, 18).Value.ToString(),
-                            arc_from = planilha.Cell(l, 19).Value.ToString(),
-                            arc_to = planilha.Cell(l, 20).Value.ToString(),
-                            sto_procedure = planilha.Cell(l, 21).Value.ToString()
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                    }
+                        id_Configuracao = int.TryParse(
+                            planilha.Cell(l, 1).Value.ToString(), out numberOff) ? int.Parse(planilha.Cell(l, 1).Value.ToString()) : numberOff,
+                        rpa_ativo = int.TryParse(
+                            planilha.Cell(l, 2).Value.ToString(), out numberOff) ? int.Parse(planilha.Cell(l, 2).Value.ToString()) : numberOff,
+                        login_rede = planilha.Cell(l, 3).Value.ToString(),
+                        dta_configuracao = DateTime.TryParse(planilha.Cell(l, 4).Value.ToString(), out dataOff) ? DateTime.Parse(planilha.Cell(l, 4).Value.ToString()) : dataOff,
+                        acs_endereco = planilha.Cell(l, 5).Value.ToString(),
+                        acs_usuario = planilha.Cell(l, 6).Value.ToString(),
+                        acs_senha = planilha.Cell(l, 7).Value.ToString(),
+                        acs_nome_arquivo = planilha.Cell(l, 8).Value.ToString(),
+                        obj_entrar = planilha.Cell(l, 9).Value.ToString(),
+                        obj_usuario = planilha.Cell(l, 10).Value.ToString(),
+                        obj_senha = planilha.Cell(l, 11).Value.ToString(),
+                        obj_pasta = planilha.Cell(l, 12).Value.ToString(),
+                        obj_nome_arquivo = planilha.Cell(l, 13).Value.ToString(),
+                        mli_sgn_carregar = planilha.Cell(l, 14).Value.ToString(),
+                        mli_sgn_entrar = planilha.Cell(l, 15).Value.ToString(),
+                        mli_sgn_pasta = planilha.Cell(l, 16).Value.ToString(),
+                        mli_sgn_download = planilha.Cell(l, 17).Value.ToString(),
+                        mli_sgn_periodicidade = planilha.Cell(l, 18).Value.ToString(),
+                        arc_from = planilha.Cell(l, 19).Value.ToString(),
+                        arc_to = planilha.Cell(l, 20).Value.ToString(),
+                        sto_procedure = planilha.Cell(l, 21).Value.ToString()
+                    });
+
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                xls.Dispose();
+                RegistraLog.Log(String.Format($"{"Log criado em "} : {DateTime.Now}"), "ArquivoLog");
+                RegistraLog.Log($"Erro: {ex.Message}");
             }
             xls.Dispose();
 
@@ -165,9 +160,7 @@ namespace Spartan.BLL.Util
             WB.Save();
 
             WB.Close();
-            oExcel.Windows.Application.Quit(); //Linha Adicional.
             oExcel.Quit();
-
         }
     }
 }

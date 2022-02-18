@@ -3,6 +3,8 @@ using Microsoft.Win32;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
+using Spartan.BLL.Util.Arquivos;
+using Spartan.BLL.Util.Extensao;
 using Spartan.Dominio.Entidades.SpartanConfig;
 using System;
 using System.Collections;
@@ -31,8 +33,7 @@ namespace Spartan
             {
                 var ArrayConfigWeb = lstConfigEntity.ToArray();
                 var IniciarCrawler = ArrayConfigWeb[0];
-                //Close();
-                atualizarChromeDriver();
+                AtualizarChromeDriver();
                 var chromeOption = new ChromeOptions();
 
                 //chromeOption.AddArgument("--headless");
@@ -53,9 +54,9 @@ namespace Spartan
                 }
                 catch (Exception ex)
                 {
-                    Close(); //Fecha o CHROME e LIMPA os CHROME_DRIVERS usados.
+                    RegistraLog.Log(String.Format($"{"Log criado em "} : {DateTime.Now}"), "ArquivoLog");
+                    RegistraLog.Log($"Erro: {ex.Message}");
                 }
-                
 
                 // Insere USUARIO.
                 var element = new WebDriverWait(_driver, TimeSpan.FromSeconds(30)).Until(ExpectedConditions.ElementToBeClickable(By.XPath(IniciarCrawler.obj_usuario)));
@@ -81,47 +82,18 @@ namespace Spartan
                     element = new WebDriverWait(_driver, TimeSpan.FromSeconds(30)).Until(ExpectedConditions.ElementToBeClickable(By.XPath(Arquivo.obj_nome_arquivo)));
                     _driver.FindElement(By.XPath(Arquivo.obj_nome_arquivo)).Click();
                     Thread.Sleep(int.Parse(Arquivo.mli_sgn_download));
-                    /*
-                    string HTMLSerasa = _driver.PageSource; // Insere HTML da pagina na variavel.
-                    string XpathArquivo = "";
-                    if (HTMLSerasa.ToLower().Contains(Arquivo.acs_nome_arquivo.ToLower())) // Verifica se o nome do arquivo esta no HTML.
-                    {
-                        doc.LoadHtml(HTMLSerasa); // Carrega o HTML.
-
-                        var htmlNodes = doc.DocumentNode.SelectNodes(Arquivo.obj_nome_arquivo).ToList(); // Cria uma lista com as TAG´s existentes na DIV.
-                        foreach (var node in htmlNodes) // Vare cada item da lista.
-                        {
-                            foreach (var childNode in node.ChildNodes) // Vare os sub items da lista.
-                            {
-                                foreach (var childAnchor in childNode.ChildNodes) // Vare os sub items da lista.
-                                {
-                                    if (childAnchor.Name == "a" && childAnchor.InnerText.ToLower() == Arquivo.acs_nome_arquivo.ToLower()) // Valida a ancora encontrada é referente ao ARQUIVO procurado.
-                                    {
-                                        XpathArquivo = childAnchor.XPath; // Carrega o XPATH da TAG ANCHOR.
-                                    }
-                                }
-                            }
-                        }
-
-                        // Clica na TAG A, para baixar o ARQUIVO.
-                        element = new WebDriverWait(_driver, TimeSpan.FromSeconds(30)).Until(ExpectedConditions.ElementToBeClickable(By.XPath(XpathArquivo)));
-                        _driver.FindElement(By.XPath(XpathArquivo)).Click();
-                        Thread.Sleep(5000);
-                    
-                    }
-                    */
                 }
-
-                Close(); //Fecha o CHROME e LIMPA os CHROME_DRIVERS usados.
             }
             catch (Exception ex)
             {
-                Close();     
+                RegistraLog.Log(String.Format($"{"Log criado em "} : {DateTime.Now}"), "ArquivoLog");
+                RegistraLog.Log($"Erro: {ex.Message}");
             }
+            Close();
             return true;
         }
 
-        private static void atualizarChromeDriver()
+        private static void AtualizarChromeDriver()
         {
             try
             {
@@ -157,6 +129,8 @@ namespace Spartan
             }
             catch (Exception ex)
             {
+                RegistraLog.Log(String.Format($"{"Log criado em "} : {DateTime.Now}"), "ArquivoLog");
+                RegistraLog.Log($"Erro: {ex.Message}");
             }
         }
 
@@ -167,26 +141,17 @@ namespace Spartan
                 _driver.Close();
                 _driver.Quit();
                 _driver.Dispose();
+
+                List<string> ListaDeProcessosForKill = new List<string>();
+                ListaDeProcessosForKill.Add("chromedriver");
+                ListaDeProcessosForKill.Add("EXCEL");
+
+                ProcessExtension.ProcessKill(ListaDeProcessosForKill);
             }
             catch (Exception ex)
             {
-
-                foreach (var process in Process.GetProcessesByName("chromedriver"))
-                {
-                    process.Kill();
-                }
-            }
-
-            try
-            {
-                foreach (var process in Process.GetProcessesByName("chromedriver"))
-                {
-                    process.Kill();
-                }
-            }
-            catch (Exception ex)
-            {
-
+                RegistraLog.Log(String.Format($"{"Log criado em "} : {DateTime.Now}"), "ArquivoLog");
+                RegistraLog.Log($"Erro: {ex.Message}");
             }
         }
     }

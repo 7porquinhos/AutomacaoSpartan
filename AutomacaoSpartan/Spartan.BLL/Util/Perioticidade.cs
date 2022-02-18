@@ -1,4 +1,5 @@
-﻿using Spartan.BLL.Util.Extensao;
+﻿using Spartan.BLL.Util.Arquivos;
+using Spartan.BLL.Util.Extensao;
 using Spartan.Dominio.Entidades.SpartanConfig;
 using System;
 using System.Collections.Generic;
@@ -14,21 +15,30 @@ namespace Spartan.BLL.Util
         {
             List<ConfigEntity> lstConfigEntityAtualizada = new List<ConfigEntity>();
 
-            foreach (var item in lstConfigEntities)
+            try
             {
-                if (item.dta_configuracao.DifencaHoras(DateTime.Now).Days == 0 && !string.IsNullOrEmpty(item.mli_sgn_periodicidade))
+                foreach (var item in lstConfigEntities)
                 {
-                    lstConfigEntityAtualizada.Add(item);
-                }
-                else if (item.dta_configuracao.DifencaHoras(DateTime.Now).Days > 0 && !string.IsNullOrEmpty(item.mli_sgn_periodicidade))
-                {
-                    lstConfigEntityAtualizada.Add(item);
-                }
-                else if (item.dta_configuracao.DifencaHoras(DateTime.Now).Days > 0 && string.IsNullOrEmpty(item.mli_sgn_periodicidade))
-                {
-                    lstConfigEntityAtualizada.Add(item);
+                    if (item.dta_configuracao.DifencaHoras(DateTime.Now).Days == 0 && !string.IsNullOrEmpty(item.mli_sgn_periodicidade))
+                    {
+                        lstConfigEntityAtualizada.Add(item);
+                    }
+                    else if (item.dta_configuracao.DifencaHoras(DateTime.Now).Days > 0 && !string.IsNullOrEmpty(item.mli_sgn_periodicidade))
+                    {
+                        lstConfigEntityAtualizada.Add(item);
+                    }
+                    else if (item.dta_configuracao.DifencaHoras(DateTime.Now).Days > 0 && string.IsNullOrEmpty(item.mli_sgn_periodicidade))
+                    {
+                        lstConfigEntityAtualizada.Add(item);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                RegistraLog.Log(String.Format($"{"Log criado em "} : {DateTime.Now}"), "ArquivoLog");
+                RegistraLog.Log($"Erro: {ex.Message}");
+            }
+
             return lstConfigEntityAtualizada;
         }
     }
